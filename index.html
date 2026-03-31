@@ -219,10 +219,13 @@ function addAssistantMessage(data, showFeedback) {
   }
 
   if (showFeedback) {
+    const msgKey = id;
+    window._feedbackData = window._feedbackData || {};
+    window._feedbackData[msgKey] = data;
     inner += `<div class="feedback-row">
       <span class="feedback-label">Was this helpful?</span>
-      <button class="feedback-btn" id="${id}-up" onclick="giveFeedback('${id}','up',${JSON.stringify(data).replace(/'/g,"&#39;")})">👍</button>
-      <button class="feedback-btn" id="${id}-down" onclick="giveFeedback('${id}','down',${JSON.stringify(data).replace(/'/g,"&#39;")})">👎</button>
+      <button class="feedback-btn" id="${id}-up" onclick="giveFeedback('${id}','up')">👍</button>
+      <button class="feedback-btn" id="${id}-down" onclick="giveFeedback('${id}','down')">👎</button>
     </div>`;
   }
 
@@ -271,7 +274,8 @@ function renderChart(canvasId, columns, rows) {
   });
 }
 
-async function giveFeedback(msgId, fb, data) {
+async function giveFeedback(msgId, fb) {
+  const data = (window._feedbackData || {})[msgId] || {};
   document.getElementById(`${msgId}-up`).classList.toggle('active-up', fb === 'up');
   document.getElementById(`${msgId}-down`).classList.toggle('active-down', fb === 'down');
   const lastUserMsg = [...document.querySelectorAll('.msg.user .msg-bubble')].pop()?.textContent || '';
